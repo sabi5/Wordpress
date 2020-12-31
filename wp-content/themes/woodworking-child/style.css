@@ -1,0 +1,25 @@
+/*
+ Theme Name:   woodworking Child
+ Theme URI:    http://localhost/wordpress/wp-admin/themes.php/woodworking-child
+ Description:  woodworking Child Theme
+ Author:       Sabreen Shakeel
+ Author URI:   http://example.com
+ Template:     woodworking
+ Version:      5.6
+ License:      GNU General Public License v2 or later
+ License URI:  http://www.gnu.org/licenses/gpl-2.0.html
+ Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
+ Text Domain:  woodworkingchild
+*/
+
+#logo a{
+    color: rgb(238, 47, 255);
+}
+
+h1, h2,h3{
+    color: cyan;
+}
+
+/* body{
+    background-color: #ccc;
+} */
