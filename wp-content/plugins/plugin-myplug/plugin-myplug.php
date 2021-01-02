@@ -261,9 +261,6 @@ if(isset($_POST['subscribe'])){
         $var = array($_POST['email']);
     }
 
-    update_post_meta($post_id, 'subscribe_data' ,$var);
-
-
 
 
 }
@@ -300,7 +297,7 @@ function ced_cw_post_type_blog() {
     'thumbnail', // featured images
     'excerpt', // post excerpt
     'custom-fields', // custom fields
-    'comments', // post comments
+    'comments', // post commenget_postts
     'revisions', // post revisions
     'post-formats', // post formats
     );
@@ -359,8 +356,6 @@ function ced_cw_post_type_blog() {
         echo $args['before_widget'];
         if ( ! empty( $title ) )
         
-        
-   
         echo $args['before_title'] . $title . $args['after_title'];
         
         $args = array(
@@ -368,7 +363,9 @@ function ced_cw_post_type_blog() {
         '_builtin' => false
         );
         // Run code only for Single post page
-        if ( is_single() && 'post' == get_post_type() ) {
+        if ( is_single() ) {
+
+            if(in_array(get_post_type(), $instance['posttype'])){
             ?>
                 
                 <form method="POST">
@@ -380,19 +377,10 @@ function ced_cw_post_type_blog() {
                 <button type="submit" name="subscribe" class="btn btn-primary">Subscribe</button>
                 </form></br>
                 <?php
+            }
         }
-        $output = 'names'; // 'names' or 'objects' (default: 'names')
-        $operator = 'or'; // 'and' or 'or' (default: 'and')
-        
-        $post_types = get_post_types( $args, $output, $operator ); ?>
-        
-        
-        <?php
-        
-        // This is where you run the code and display the output
-        //echo $args['after_widget'];
-        }
-        
+    }
+    
         // Widget Backend
         public function form( $instance ) {
         if ( isset( $instance[ 'title' ] ) ) {
@@ -401,10 +389,13 @@ function ced_cw_post_type_blog() {
         else {
         $title = __( 'New title', 'wpb_subs_domain' );
         }
+        //$instance['posttype'];
+        // print_r($instance['posttype']);
+        $checked ="";
         // Widget admin form
         ?>
         <?php
-        $args = array(
+       $args = array(
         'public' => true,
         '_builtin' => false
         );
@@ -415,26 +406,32 @@ function ced_cw_post_type_blog() {
         $post_types = get_post_types( $args, $output, $operator );
         
         if ( $post_types ) { // If there are any custom public post types.
-        
-        echo '<ul>';
-        
         foreach ( $post_types as $post_type ) {
         if($post_type == "attachment" || $post_type == "wpforms") {
-        // unset($post_type);
         continue;
         }
-        else { ?>
-        <form method="POST">
-        <!-- <input type="checkbox" id="post" name="post" value="<?php echo $post_type; ?>"> -->
-        <?php echo '<li><input type="checkbox" id="post" name="post" value="' . $post_type . '">' . $post_type . '</li>'; ?>
-        </form>
+        else {
+        if(is_array( $instance['posttype'])) {
+        if (in_array($post_type, $instance['posttype'])) { //check if Post Type checkbox is checked and display as check if so
+        $checked = "checked='checked'";
+        }
+        else {
+        $checked = "";
+        }
+        } else{
+        $checked = "";
+        }
+        ?>
+        <input id="<?php echo $this->get_field_id('posttype') . $post_type; ?>" name="<?php echo $this->get_field_name('posttype[]'); ?>" type="checkbox" value="<?php echo $post_type; ?>" <?php echo $checked ?> /> <?php echo $post_type ?>
         <?php
         }
-        }
         
-        echo '</ul>';
-        
-        }
+        } ?>
+        <p>
+        <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:' ); ?></label>
+        <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
+        </p>
+        <?php }
         ?>
         <?php
         }
@@ -443,6 +440,7 @@ function ced_cw_post_type_blog() {
         public function update( $new_instance, $old_instance ) {
         $instance = array();
         $instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
+        $instance['posttype'] = isset( $new_instance['posttype'] ) ? $new_instance['posttype'] : false;
         return $instance;
         }
         
@@ -454,4 +452,7 @@ function ced_cw_post_type_blog() {
         register_widget( 'wpb_subs' );
         }
         add_action( 'widgets_init', 'wpb_subscribe_load_widget' );
+
+       
+        
 ?>

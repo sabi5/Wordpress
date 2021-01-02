@@ -4,44 +4,10 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
 
-
-
-function data_fatched() {
-	$args = array(
-'post_type' => '',
-'post_status' => 'publish',
-'fields' => 'ids',
-'meta_query' => array(
-array(
-'key' => 'subscribe_data',
-'compare' => 'exist'
-),
-),
-);
-
-$result_query = new WP_Query( $args );
- $ID_array = $result_query->posts;
-//  print_r($result_query);
-  
-  return $ID_array;
-}
-$data = data_fatched();
-echo "<pre>";
-// print_r($data);
-
-echo "</br>";
-foreach($data as $val) {
-  echo $val;
-  $value = get_post_meta($val, 'subscribe_data');
-  echo get_the_title($val);
-		print_r($value);
-
-}
-die;
-
-
-
 class Class_list_table extends WP_List_Table {
+
+
+ 
 
 	/** Class constructor */
 	public function __construct() {
@@ -67,7 +33,7 @@ class Class_list_table extends WP_List_Table {
 
         global $wpdb;
     
-        $sql = "SELECT * FROM wp_contact";
+        // $sql = "SELECT * FROM wp_contact";
     
         if ( ! empty( $_REQUEST['orderby'] ) ) {
         $sql .= ' ORDER BY ' . esc_sql( $_REQUEST['orderby'] );
@@ -148,10 +114,11 @@ function column_name( $item ) {
    */
   public function column_default( $item, $column_name ) {
       switch ( $column_name ) {
-        case 'username':
+        case 'id':
         case 'email':
-        case 'mobile':
-        case 'password':
+          // return $arr;
+        case 'title':
+     
           return $item[ $column_name ];
         default:
           return print_r( $item, true ); //Show the whole array for troubleshooting purposes
@@ -179,10 +146,11 @@ function column_name( $item ) {
   function get_columns() {
       $columns = [
         'cb'      => '<input type="checkbox" />',
-        'username'    => __( 'username', 'sp' ),
+        'id'    => __( 'id', 'sp' ),
         'email' => __( 'email', 'sp' ),
-        'mobile'    => __( 'mobile', 'sp' ),
-        'password'    => __( 'password', 'sp' )
+        'title'    => __( 'title', 'sp' )
+       
+        
       ];
     
       return $columns;
@@ -195,10 +163,10 @@ function column_name( $item ) {
    */
   public function get_sortable_columns() {
       $sortable_columns = array(
-        'username' => array( 'username', true ),
+        'id' => array( 'id', true ),
         'email' => array( 'email', false ),
-        'mobile' => array( 'mobile', false ),
-        'password' => array( 'password', false )
+        'title' => array( 'title', false )
+       
       );
     
       return $sortable_columns;
@@ -215,11 +183,51 @@ function column_name( $item ) {
     
       return $actions;
     }
+    // META QUERY
+    
+    public function data_fetched()
+    {
+      $args = array(
+      'post_type' => '',
+      'post_status' => 'publish',
+      'fields' => 'ids',
+      'meta_query' => array(
+      array(
+      'key' => 'subscribe_data',
+      'compare' => 'exist'
+      ),
+      ),
+      );
+    
+      $result_query = new WP_Query( $args );
+      $ID_array = $result_query->posts;
+      // print_r($result_query);
+    
+      return $ID_array;
+    }
 
     /**
    * Handles data query and filter, sorting, and pagination.
    */
   public function prepare_items() {
+
+  
+      $data = $this->data_fetched();
+     
+    foreach($data as $val)
+      {
+    
+      $value = get_post_meta($val, 'subscribe_data',1);
+      $title = get_the_title($val);
+    
+        foreach($value as $res)
+        {
+        $arr[] = array('id' => $val, 'title' => $title, 'email'=> $res );
+        }
+        
+      
+    }
+   
 
     $columns = $this->get_columns();
     $hidden = array();
@@ -239,7 +247,7 @@ function column_name( $item ) {
       ] );
     
     
-      $this->items = self::get_customers( $per_page, $current_page );
+      $this->items = $arr;
     }
     
 
