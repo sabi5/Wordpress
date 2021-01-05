@@ -362,6 +362,8 @@ function ced_cw_post_type_blog() {
         'public' => true,
         '_builtin' => false
         );
+
+
         // Run code only for Single post page
         if ( is_single() ) {
 
@@ -379,6 +381,7 @@ function ced_cw_post_type_blog() {
                 <?php
             }
         }
+
     }
     
         // Widget Backend

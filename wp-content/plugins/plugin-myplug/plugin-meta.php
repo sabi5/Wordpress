@@ -28,14 +28,14 @@
             $screen                            // Post type
         );
     }
-    add_option('meta_option_custom','','yes');
+    // add_option('meta_option_custom','','yes');
 }
 add_action( 'add_meta_boxes', 'wporg_add_custom_box' );
 
 function wporg_custom_box_html( $post ) {
     ?>
     <label for="wporg_field">Custom Meta box</label>
-    <input type="text" name="wporg_field" id="wporg_field" class="postbox">
+    <input type="text" name="wporg_field" id="wporg_field" class="postbox" value= "<?php echo $post->_wporg_meta_key;?>">
     
     <?php
 }
