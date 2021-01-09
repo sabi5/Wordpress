@@ -1,0 +1,27 @@
+2021-01-07T12:56:13+00:00 CRITICAL Uncaught ArgumentCountError: Too few arguments to function ced_apply_filter(), 0 passed in /opt/lampp/htdocs/wordpress/wp-includes/class-wp-hook.php on line 285 and exactly 1 expected in /opt/lampp/htdocs/wordpress/wp-content/themes/woodworking/functions.php:329
+Stack trace:
+#0 /opt/lampp/htdocs/wordpress/wp-includes/class-wp-hook.php(285): ced_apply_filter()
+#1 /opt/lampp/htdocs/wordpress/wp-includes/plugin.php(212): WP_Hook->apply_filters('What is Portfol...', Array)
+#2 /opt/lampp/htdocs/wordpress/wp-includes/post-template.php(171): apply_filters('the_title', 'What is Portfol...', 572)
+#3 /opt/lampp/htdocs/wordpress/wp-includes/post-template.php(89): get_the_title(Object(WP_Post))
+#4 /opt/lampp/htdocs/wordpress/wp-includes/general-template.php(3120): the_title_attribute(Array)
+#5 /opt/lampp/htdocs/wordpress/wp-includes/class-wp-hook.php(287): feed_links_extra(Array)
+#6 /opt/lampp/htdocs/wordpress/wp-includes/class-wp-hook.php(311): WP_Hook->apply_filters(NULL, Array)
+#7 /opt/lampp/htdocs/wordpress/wp-includ in /opt/lampp/htdocs/wordpress/wp-content/themes/woodworking/functions.php on line 329
+
+2021-01-07T13:21:45+00:00 CRITICAL Uncaught Error: Call to undefined function is_post_type() in /opt/lampp/htdocs/wordpress/wp-content/themes/woodworking/functions.php:332
+Stack trace:
+#0 /opt/lampp/htdocs/wordpress/wp-includes/class-wp-hook.php(289): ced_apply_filter('Home')
+#1 /opt/lampp/htdocs/wordpress/wp-includes/plugin.php(212): WP_Hook->apply_filters('Home', Array)
+#2 /opt/lampp/htdocs/wordpress/wp-includes/nav-menu.php(841): apply_filters('the_title', 'Home', 532)
+#3 [internal function]: wp_setup_nav_menu_item(Object(WP_Post))
+#4 /opt/lampp/htdocs/wordpress/wp-includes/nav-menu.php(748): array_map('wp_setup_nav_me...', Array)
+#5 /opt/lampp/htdocs/wordpress/wp-includes/nav-menu-template.php(151): wp_get_nav_menu_items(Object(WP_Term), Array)
+#6 /opt/lampp/htdocs/wordpress/wp-content/themes/woodworking/template_part/portfolio-header.php(47): wp_nav_menu(Object(stdClass))
+#7 /opt/lampp/htdocs/wordpress/wp-includes/template.php(732): require('/opt/lampp/htdo...')
+#8 /opt/lampp/htdocs/wordpress/wp-includes/template.php(676): load_template(' in /opt/lampp/htdocs/wordpress/wp-content/themes/woodworking/functions.php on line 332
+
+2021-01-07T13:35:22+00:00 CRITICAL Allowed memory size of 536870912 bytes exhausted (tried to allocate 16777224 bytes) in /opt/lampp/htdocs/wordpress/wp-includes/class-wp-hook.php on line 275
+
+2021-01-07T13:43:34+00:00 CRITICAL syntax error, unexpected end of file in /opt/lampp/htdocs/wordpress/wp-content/themes/woodworking/functions.php on line 357
+

@@ -28,7 +28,7 @@
             $screen                            // Post type
         );
     }
-    // add_option('meta_option_custom','','yes');
+
 }
 add_action( 'add_meta_boxes', 'wporg_add_custom_box' );
 
@@ -54,8 +54,11 @@ add_action( 'save_post', 'wporg_save_postdata' );
 
 //  Top-level Menus
 
-
-
+/**
+ * ced_wporg_options_page_html
+ *
+ * @return void
+ */
 function ced_wporg_options_page_html() {
      
         $args = array(
@@ -116,6 +119,11 @@ $option=$_POST['posttype'];
 update_option('meta_option_custom',$option);
 }
 
+/**
+ * ced_wporg_options_page
+ *
+ * @return void
+ */
 function ced_wporg_options_page() {
     add_menu_page(
         'Ced Menu', //menu title

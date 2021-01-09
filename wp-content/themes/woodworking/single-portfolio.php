@@ -10,6 +10,8 @@
     // die("single-port");
 ?>
 
+    
+
     <div class="post">
         <h2 class="title"><a href="<?php the_permalink();?>"><?php the_title();?> </a></h2>
         <p class="meta">Posted by <a href="#"><?php the_author();?></a> on <?php $date= get_the_date();

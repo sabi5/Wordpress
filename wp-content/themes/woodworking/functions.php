@@ -328,4 +328,33 @@ class wpb_widget extends WP_Widget {
 
 
 
+
+
+	// function ced_apply_filter($arg){
+	// 	if(get_post_type() == 'portfolio'){
+			
+	// 	 	return 'sabreen'.$arg;
+		
+	// 	}
+		 
+	// }
+	
+	// function ag_ced_apply_filter($args){
+
+		
+	// 	if(get_post_type() == 'portfolio'){
+			
+	// 	 return 'shakeel'.$args;
+		
+	// 	}
+		 
+	// }
+	// // $res = the_title();
+
+	// // function display(){
+	// 	add_filter('the_title', 'ced_apply_filter', 6, 1); // checking for priority 
+	// 	add_filter('the_title', 'ag_ced_apply_filter', 7, 1);
+	// // }
+	// // add_action('init', 'display');
+
 ?>

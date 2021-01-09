@@ -275,7 +275,7 @@ function ced_create_posttype() {
     array(
       'labels' => array(
        'name' => __( 'Blog' ),
-       'singular_name' => __( 'Blog' )
+       'singular_name' => __( 'Blog123' )
       ),
       'public' => true,
       'has_archive' => false,
@@ -289,44 +289,44 @@ function ced_create_posttype() {
 
 
     /*Custom Post type start*/
-function ced_cw_post_type_blog() {
-    $supports = array(
-    'title', // post title
-    'editor', // post content
-    'author', // post author
-    'thumbnail', // featured images
-    'excerpt', // post excerpt
-    'custom-fields', // custom fields
-    'comments', // post commenget_postts
-    'revisions', // post revisions
-    'post-formats', // post formats
-    );
-    $labels = array(
-    'name' => _x('Blog', 'plural'),
-    'singular_name' => _x('Blog', 'singular'),
-    'menu_name' => _x('Blog', 'admin menu'),
-    'name_admin_bar' => _x('Blog', 'admin bar'),
-    'add_new' => _x('Add Blog', 'add new'),
-    'add_new_item' => __('Add New blog'),
-    'new_item' => __('New blogs'),
-    'edit_item' => __('Edit blogs'),
-    'view_item' => __('View blogs'),
-    'all_items' => __('All blogs'),
-    'search_items' => __('Search blogs'),
-    'not_found' => __('No blogs found.'),
-    );
-    $args = array(
-    'supports' => $supports,
-    'labels' => $labels,
-    'public' => true,
-    'query_var' => true,
-    'rewrite' => array('slug' => 'blogs'),
-    'has_archive' => true,
-    'hierarchical' => false,
-    );
-    register_post_type('news', $args);
-    }
-    add_action('init', 'ced_cw_post_type_blog');
+// function ced_cw_post_type_blog() {
+//     $supports = array(
+//     'title', // post title
+//     'editor', // post content
+//     'author', // post author
+//     'thumbnail', // featured images
+//     'excerpt', // post excerpt
+//     'custom-fields', // custom fields
+//     'comments', // post commenget_postts
+//     'revisions', // post revisions
+//     'post-formats', // post formats
+//     );
+//     $labels = array(
+//     'name' => _x('Blog', 'plural'),
+//     'singular_name' => _x('Blog', 'singular'),
+//     'menu_name' => _x('Blog', 'admin menu'),
+//     'name_admin_bar' => _x('Blog', 'admin bar'),
+//     'add_new' => _x('Add Blog', 'add new'),
+//     'add_new_item' => __('Add New blog'),
+//     'new_item' => __('New blogs'),
+//     'edit_item' => __('Edit blogs'),
+//     'view_item' => __('View blogs'),
+//     'all_items' => __('All blogs'),
+//     'search_items' => __('Search blogs'),
+//     'not_found' => __('No blogs found.'),
+//     );
+//     $args = array(
+//     'supports' => $supports,
+//     'labels' => $labels,
+//     'public' => true,
+//     'query_var' => true,
+//     'rewrite' => array('slug' => 'blogs'),
+//     'has_archive' => true,
+//     'hierarchical' => false,
+//     );
+//     register_post_type('news', $args);
+//     }
+//     add_action('init', 'ced_cw_post_type_blog');
     /*Custom Post type end*/
 
 
