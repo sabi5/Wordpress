@@ -106,7 +106,7 @@ class Metaphor_Admin {
 	 * ced_wporg_custom_post_type
 	 * 
 	 * Description : create a custom post type - Products
-	 * Date : 8-01-2020
+	 * Date : 8-01-2021
 	 * @since : 1.0.0
 	 * @version : 1.0
 	 *
@@ -139,7 +139,7 @@ class Metaphor_Admin {
 	 * ced_register_meta
 	 * 
 	 * Description : This function is used for registering Meta boxes
-	 * Date : 8-01-2020
+	 * Date : 8-01-2021
 	 * @since : 1.0.0
 	 * @version : 1.0
 	 *
@@ -147,7 +147,6 @@ class Metaphor_Admin {
 	 */
 	public function ced_register_meta(){
 
-		// add_meta_box('boil_title_id', 'Title', array($this,'ced_display_meta'), 'products');
 		add_meta_box('boil_price_id', 'Pricing', array($this,'ced_price_meta'), 'products');
 		add_meta_box('boil_inventory_id', 'Inventory', array($this,'ced_inventory_meta'), 'products');
 		
@@ -158,7 +157,7 @@ class Metaphor_Admin {
 	 * ced_price_meta
 	 * 
 	 * Description : This function is used for Meta box layout
-	 * Date : 8-01-2020
+	 * Date : 8-01-2021
 	 * @since : 1.0.0
 	 * @version : 1.0
 	 *
@@ -167,11 +166,13 @@ class Metaphor_Admin {
 	public function ced_price_meta() {
 		?>
 		<label for="wporg_field">Discounted Price</label>
-		<input type="number" name="discount" class="postbox" min = "0" value = "<?php
-		 echo get_post_meta( get_the_ID(), 'price_discount_key', true );?>" ><br>
+		<input type="number" name="discount" id="discountbox" min = "0" value = "<?php
+		 echo get_post_meta( get_the_ID(), 'price_discount_key', true );?>" >
+
+		 <span id ="error"></span><br>
 
 		<label for="wporg_field">Regular Price</label>
-		<input type="number" name="regular" class="postbox" min = "0" value = "<?php
+		<input type="number" name="regular" id="regularbox" min = "0" value = "<?php
 		 echo get_post_meta( get_the_ID(), 'price_meta_key', true );?>" >
 		
 		<?php
@@ -180,7 +181,7 @@ class Metaphor_Admin {
 	/**
 	 * ced_inventory_meta
 	 *	Description : This function is used for Meta box layout
-	 * Date : 8-01-2020
+	 * Date : 8-01-2021
 	 * @since : 1.0.0
 	 * @version : 1.0
 	 * @return void
@@ -194,12 +195,12 @@ class Metaphor_Admin {
 		<?php
 	}
 
-	// //  SAVING META DATA
+	//  SAVING META DATA
 	
 	/**
 	 * ced_boiler_wporg_save_postdata
 	 * Description : This function is used for Saving Meta box values
-	 * Date : 8-01-2020
+	 * Date : 8-01-2021
 	 * @since : 1.0.0
 	 * @version : 1.0
 	 * 
@@ -221,11 +222,11 @@ class Metaphor_Admin {
 	 * ced_price_wporg_save_postdata
 	 *
 	 * Description : This function is used for Saving Meta box values
-	 * Date : 8-01-2020
+	 * Date : 8-01-2021
 	 * @since : 1.0.0
 	 * @version : 1.0
 	 * 
-	 * @param  mixed $post_id - meta box id
+	 * @param  mixed $post_id -> meta box id
 	 * @return void
 	 */
 	
@@ -255,8 +256,8 @@ class Metaphor_Admin {
 	/**
 	 * ced_wporg_register_taxonomy_clothing
 	 *
-	 * Description : This function is used for Saving Meta box values
-	 * Date : 8-01-2020
+	 * Description : This function is used for creating taxonomy
+	 * Date : 8-01-2021
 	 * @since : 1.0.0
 	 * @version : 1.0
 	 * 
@@ -287,11 +288,4 @@ class Metaphor_Admin {
 		register_taxonomy( 'Product taxonomy', [ 'products' ], $args );
 	   }
 	   
-	// 
-		// add_shortcode('shop', 'ced_shop_page');
-		
-	   
-
-
-	
 }

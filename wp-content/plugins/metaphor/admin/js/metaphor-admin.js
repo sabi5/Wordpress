@@ -1,6 +1,26 @@
 (function( $ ) {
 	'use strict';
 
+	$(document).ready(function(){
+		$("#publish").click(function(e){
+		e.preventDefault();
+		var discount = $('#discountbox').val();
+		// alert(val);
+		//alert(val);
+		discount = parseInt(discount);
+		var regular = $("#regularbox").val();
+		// alert(reg);
+		//alert(reg);
+		regular = parseInt(regular);
+		if(discount > regular) {
+		$('#error').html("Discount Price must be less than Regular price");
+		}
+		else {
+		$("#post").submit();
+		}
+		});
+		});
+
 	/**
 	 * All of the code for your admin-facing JavaScript source
 	 * should reside in this file.

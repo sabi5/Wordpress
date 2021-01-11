@@ -15,7 +15,7 @@
  * @wordpress-plugin
  * Plugin Name:       Huge Metaphor
  * Plugin URI:        cedcommerce
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Description:       Add some wooCommerce functionality like create pages, Custom post type, Custom 						 Taxonomy, Add to cart functionality.
  * Version:           1.0.0
  * Author:            Sabreen Shakeel
  * Author URI:        cedcommerce

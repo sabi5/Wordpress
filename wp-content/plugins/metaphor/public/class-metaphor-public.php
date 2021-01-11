@@ -106,8 +106,8 @@ class Metaphor_Public {
 	/**
 	 * ced_shop_page
 	 * 
-	 * Description : create a shortcode to display product list
-	 * Date : 8-01-2020
+	 * Description : create a shortcode to display products list
+	 * Date : 11-01-2021
 	 * @since : 1.0.0
 	 * @version : 1.0
 	 *
@@ -115,7 +115,21 @@ class Metaphor_Public {
 	 */
 	function ced_shop_page(){
 
-		$loop = new WP_Query( array( 'post_type' => 'products', 'posts_per_page' => 10 ) );
+		// PAGINATION FOR CART PAGE
+
+		$loop = new WP_Query( array('posts_per_page'=>1, 'post_type'=>'products','paged' => get_query_var('paged') ? get_query_var('paged') : 1) );
+
+		// print_r($loop);
+		// print_r(get_query_var('paged'));
+
+		
+
+			// print_r(array(
+			// 	'current' => max( 1, get_query_var('paged') ),
+			// 	'total' => $loop->max_num_pages
+			// 	));
+
+		// $loop = new WP_Query( array( 'post_type' => 'products', 'posts_per_page' => 10 ) );
 		while ( $loop->have_posts() ) : $loop->the_post();
 			the_title('<h2 class="entry-title"><a href="' . get_permalink() . '" title="' . the_title_attribute( 'echo=0' ) . '" rel="bookmark">', '</a></h2>' );
 
@@ -125,48 +139,146 @@ class Metaphor_Public {
 
 				<div class="entry">
 												
-				<p><?php the_post_thumbnail( 'thumbnail', array( 'class' => 'alignleft border' ) );?><?php echo the_content();
+					<p><?php the_post_thumbnail( 'thumbnail', array( 'class' => 'alignleft border' ) );?><?php echo the_content();
+					
+					if((get_post_meta(get_the_ID(), 'price_discount_key', true)) == 0 || (get_post_meta(get_the_ID(), 'price_discount_key', true)) == " " ){
+						echo get_post_meta(get_the_ID(), 'price_meta_key', true);
+					}else{
+						echo get_post_meta(get_the_ID(), 'price_discount_key', true);
+					}
+					
+					?>
 				
-				
-				// echo get_post_meta(get_the_ID(), 'price_meta_key', true);
-
-				if((get_post_meta(get_the_ID(), 'price_discount_key', true)) == 0 || (get_post_meta(get_the_ID(), 'price_discount_key', true)) == " " ){
-					echo get_post_meta(get_the_ID(), 'price_meta_key', true);
-				}else{
-					echo get_post_meta(get_the_ID(), 'price_discount_key', true);
-				}
-				
-				// echo get_post_meta(get_the_ID(), 'price_inventory_key', true);
-				
-				?>
-				<!-- <h1>This is my first product</h1> -->
-				</p>
+					</p>
 
 				</div>
 				
 			</div>
 
 		<?php endwhile;
+		echo paginate_links(array(
+			'current' => max( 1, get_query_var('paged') ),
+			'total' => $loop->max_num_pages
+			));
+
+	}
+
+	//    SHORTCODE FOR CART PAGE 
+	
+	/**
+	 * ced_cart_display
+	 * 
+	 * Description : create a shortcode to display cart list
+	 * Date : 8-01-2021
+	 * @since : 1.0.0
+	 * @version : 1.0
+	 * @return void
+	 */
+	function ced_cart_display(){
+
+		// DELETE PRODUCT
+
+		if(isset($_POST['delete'])){
+			$user_id = get_current_user_id();
+			$user_meta = get_user_meta( $user_id, 'add_cart' , true);
+			$id = $_POST['delete'];
+			// echo $id;
+			if (!empty($user_meta)) {
+				foreach ($user_meta as $key => $val) {
+					// print_r($val);
+					if($val["post_id"] == $id)
+					{
+						unset($user_meta[$key]);
+					}
+				}
+				update_user_meta( $user_id, 'add_cart', $user_meta );
+			}
+		}
+
+		// UPDATE PRODUCT
+		
+		if(isset($_POST['edit'])){
+			$user_id = get_current_user_id();
+			$user_meta = get_user_meta( $user_id, 'add_cart' , true);
+			$ids = $_POST['edit'];
+			// echo $ids;
+			$quantity = $_POST['quantity'];
+			// echo $quantity;
+
+			foreach($user_meta as $key=> $value){
+				if($ids == $value['post_id']){
+					$user_meta[$key]['inventory'] = $quantity ;
+					print_r( $value['inventory']);
+					// update_user_meta( $user_id, 'add_cart', $user_meta ); 
+				
+				}
+			}
+			update_user_meta( $user_id, 'add_cart', $user_meta ); 
+
+		}
+		// echo $id;
+		$user_id = get_current_user_id();
+		$user_meta = get_user_meta( $user_id, 'add_cart' , true);
+		// $tile =  get_the_title();
+		// print_r($user_meta);
+		?>
+		<table>
+			<tr>
+				<th>ID</th>
+				<th>product name</th>
+				<th>Image</th>
+				<th>price</th>
+				<th>Inventory</th>
+				<th>Total</th>
+				<th>Action</th>
+			</tr>
+			<?
+			$loop = new WP_Query( array('posts_per_page'=>1, 'post_type'=>'products','paged' => get_query_var('paged') ? get_query_var('paged') : 1) );
+			print_r(get_query_var('paged'));
+			foreach($user_meta as $key => $value){
+				// print_r($value);?>
+
+				<tr>
+					<form method="post">
+						<td><?php echo $value['post_id'];?></td>
+						<td><?php echo $value['title'];?></td>
+						<td><img src="<?php echo $value['image'];?>" style="height : 150px"></td>
+						<td><?php echo $value['price'];?></td>
+						<td><input type="number" min = "1" name ="quantity" value = "<?php echo $value['inventory'];?>"></td>
+						<td><?php echo $value['price'] * $value['inventory'];?></td>
+						<td><button type = "submit" name = "delete" value = "<?php echo $value['post_id'];?>">Delete</button></td>
+						<td><button type = "submit" name = "edit" value = "<?php echo $value['post_id'];?>">EDIT</button></td>
+					</form>
+				</tr>
+
+			<?}
+			?>
+		</table>
+		<?
 
 	}
 
 	//  single page for products
+	
+	/**
+	 * ced_cart_page
+	 *
+	 * Description : create a shortcode for single page for products when user click on a product item
+	 * Date : 8-01-2021
+	 * @since : 1.0.0
+	 * @version : 1.0
+	 * @param  mixed $arg
+	 * @return void
+	 */
 
 	public function ced_cart_page($arg){
 
 		if(get_post_type() == 'products' && is_single()){
 
-			// die("partial");
 			return( ABSPATH . 'wp-content/plugins/metaphor/public/partials/cart_page.php' );
-
-				
-			
 		}else{
 			return $arg;
 		}
-
-
-
 	}
 		
 }

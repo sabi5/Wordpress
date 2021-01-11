@@ -182,6 +182,7 @@ class Metaphor {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		add_shortcode('shop', array($plugin_public,'ced_shop_page'));
+		add_shortcode('cart', array($plugin_public,'ced_cart_display'));
 		$this->loader->add_filter( 'single_template', $plugin_public, 'ced_cart_page' );
 
 	}
