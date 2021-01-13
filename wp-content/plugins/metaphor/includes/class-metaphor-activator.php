@@ -32,40 +32,58 @@ class Metaphor_Activator {
 	public static function activate() {
 
 		
-			$page_title = get_page_by_title( 'Shop' );
-			
-			
-			if(!$page_title){
+		$page_title = get_page_by_title( 'Shop' );
+		
+		
+		if(!$page_title){
 
-				$my_post = array(
-					'post_title'    => wp_strip_all_tags( 'Shop' ),
-					'post_content'  => '[shop]',
-					'post_status'   => 'publish',
-					'post_author'   => 1,
-					'post_type'     => 'page',
-				);
-			
-				// Insert the post into the database
-				wp_insert_post( $my_post );
-			}
+			$my_post = array(
+				'post_title'    => wp_strip_all_tags( 'Shop' ),
+				'post_content'  => 'My custom page content',
+				'post_status'   => 'publish',
+				'post_author'   => 1,
+				'post_type'     => 'page',
+			);
+		
+			// Insert the post into the database
+			wp_insert_post( $my_post );
+		}
 
-			// CREATING CART PAGE ON PLUGIN ACTIVATION
+		// CREATING CART PAGE ON PLUGIN ACTIVATION
 
-			$page_cart = get_page_by_title( 'Cart' );
+		$page_cart = get_page_by_title( 'Cart' );
 
-			if(!$page_cart){
+		if(!$page_cart){
 
-				$my_post_cart = array(
-					'post_title'    => wp_strip_all_tags( 'Cart' ),
-					'post_content'  => 'My custom page content',
-					'post_status'   => 'publish',
-					'post_author'   => 1,
-					'post_type'     => 'page',
-				);
-			
-				// Insert the post into the database
-				wp_insert_post( $my_post_cart );
-			}
+			$my_post_cart = array(
+				'post_title'    => wp_strip_all_tags( 'Cart' ),
+				'post_content'  => 'My custom page content',
+				'post_status'   => 'publish',
+				'post_author'   => 1,
+				'post_type'     => 'page',
+			);
+		
+			// Insert the post into the database
+			wp_insert_post( $my_post_cart );
+		}
+
+		// CREATING CHECKOUT PAGE ON PLUGIN ACTIVATION
+
+		$page_checkout = get_page_by_title( 'Checkoutpage' );
+
+		if(!$page_checkout){
+
+			$my_post_checkout = array(
+				'post_title'    => wp_strip_all_tags( 'Checkoutpage' ),
+				'post_content'  => 'My custom page content',
+				'post_status'   => 'publish',
+				'post_author'   => 1,
+				'post_type'     => 'page',
+			);
+		
+			// Insert the post into the database
+			wp_insert_post( $my_post_checkout );
+		}
 
 	}
 

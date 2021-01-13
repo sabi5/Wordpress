@@ -161,6 +161,7 @@ class Metaphor {
 		$this->loader->add_action( 'save_post', $plugin_admin, 'ced_boiler_wporg_save_postdata' );
 		$this->loader->add_action( 'save_post', $plugin_admin, 'ced_price_wporg_save_postdata' );
 		$this->loader->add_action( 'init', $plugin_admin,'ced_wporg_register_taxonomy_clothing' );
+		
 		// add_shortcode('shop', array($plugin_admin,'ced_shop_page'));
 		
 		// $this->loader->add_action( 'after_setup_theme', $plugin_admin, 'ced_twentytwenty_theme_support' );
@@ -183,7 +184,9 @@ class Metaphor {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		add_shortcode('shop', array($plugin_public,'ced_shop_page'));
 		add_shortcode('cart', array($plugin_public,'ced_cart_display'));
-		$this->loader->add_filter( 'single_template', $plugin_public, 'ced_cart_page' );
+		add_shortcode('checkout', array($plugin_public,'ced_checkout_display'));
+		$this->loader->add_filter('single_template', $plugin_public, 'ced_cart_page' );
+		$this->loader->add_action('wp_login',  $plugin_public,'ced_guests_login');
 
 	}
 
