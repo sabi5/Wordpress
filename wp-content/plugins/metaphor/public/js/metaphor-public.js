@@ -1,6 +1,18 @@
 (function( $ ) {
 	'use strict';
 	
+	$(document).ready(function() { 
+
+		$('#check').click(function(){
+			if($('input[type=checkbox]').is(':checked')){
+			$('#ship_address').val($('#address').val());
+			$('#ship_state').val($('#state').val());
+			$('#ship_zip').val($('#zip').val());
+		}});
+		
+				
+	}); 
+	
 
 	/**
 	 * All of the code for your public-facing JavaScript source

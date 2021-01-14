@@ -286,6 +286,51 @@ class Metaphor_Admin {
 			'rewrite'           => [ 'slug' => 'Product taxonomy' ],
 		);
 		register_taxonomy( 'Product taxonomy', [ 'products' ], $args );
-	   }
+	}
+
+	   
+		/**
+		* ced_cpt_wporg_options_page_html
+		
+		* Description : content for custom admin menu 
+		* Date : 14-01-2021
+		* @since : 1.0.0
+		* @version : 1.0
+		* 
+		* @return void
+		*/
+		public function ced_cpt_wporg_options_page_html() {
+		
+			$args = array(
+				'public' => true,
+				'_builtin' => false
+				);
+				
+				$output = 'names'; // 'names' or 'objects' (default: 'names')
+				$operator = 'or'; // 'and' or 'or' (default: 'and')
+			echo "hello";
+				require_once('admin/partials/Class_list_table.php' );
+		}
+
+
+	/**
+	* ced_cpt_wporg_options_page
+	* Description : creating custom admin menu for display orders list 
+	* Date : 14-01-2021
+	* @since : 1.0.0
+	* @version : 1.0
+	* @return void
+	*/
+	public function ced_cpt_wporg_options_page() {
+		add_menu_page(
+			'Metaphor', //menu title
+			'metaphor menu', //menu name
+			'manage_options', // capabality
+			'meta', //slug
+			'ced_cpt_wporg_options_page_html', //function
+			0, //position
+			5
+		);
+	}
 	   
 }

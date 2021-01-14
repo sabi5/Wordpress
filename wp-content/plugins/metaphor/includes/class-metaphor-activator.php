@@ -69,12 +69,12 @@ class Metaphor_Activator {
 
 		// CREATING CHECKOUT PAGE ON PLUGIN ACTIVATION
 
-		$page_checkout = get_page_by_title( 'Checkoutpage' );
+		$page_checkout = get_page_by_title( 'Checkouts' );
 
 		if(!$page_checkout){
 
 			$my_post_checkout = array(
-				'post_title'    => wp_strip_all_tags( 'Checkoutpage' ),
+				'post_title'    => wp_strip_all_tags( 'Checkouts' ),
 				'post_content'  => 'My custom page content',
 				'post_status'   => 'publish',
 				'post_author'   => 1,
@@ -85,8 +85,49 @@ class Metaphor_Activator {
 			wp_insert_post( $my_post_checkout );
 		}
 
+		//  CREATING THANKYOU PAGE ON PLUGIN ACTIVATION
+
+		$page_thankyou = get_page_by_title( 'Thankyou' );
+
+		if(!$page_thankyou){
+
+			$my_post_thankyou = array(
+				'post_title'    => wp_strip_all_tags( 'Thankyou' ),
+				'post_content'  => 'My custom page content',
+				'post_status'   => 'publish',
+				'post_author'   => 1,
+				'post_type'     => 'page',
+			);
+		
+			// Insert the post into the database
+			wp_insert_post( $my_post_thankyou );
+		}
+
+
+
+		//   create table when plugin activated
+
+		global $wpdb;
+		
+		$table_name = $wpdb->prefix . 'orders';
+		
+		$charset_collate = $wpdb->get_charset_collate();
+
+		$sql = "CREATE TABLE `orders` (
+			`order_id` int(11) NOT NULL AUTO_INCREMENT,
+			`user_id` varchar(255) NOT NULL,
+			`customer_details` varchar(255) NOT NULL,
+			`prod_details` varchar(255) NOT NULL,
+			`total_amount` int(255) NOT NULL,
+			`payment_method` varchar(255) NOT NULL,
+			PRIMARY KEY (`order_id`)
+		   ) $charset_collate;";
+
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		dbDelta( $sql );
+		
 	}
 
-	// get_page_by_title
+
 
 }

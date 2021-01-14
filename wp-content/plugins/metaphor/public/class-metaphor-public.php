@@ -1,6 +1,8 @@
 <?php
 
-// session_start();
+session_start();
+// session_destroy();
+// session_destroy();
 /**
  * The public-facing functionality of the plugin.
  *
@@ -102,7 +104,7 @@ class Metaphor_Public {
 
 	}
 
-	//    SHORTCODE FOR SHOP PAGE 
+	// SHORTCODE FOR SHOP PAGE 
 	
 	/**
 	 * ced_shop_page
@@ -118,15 +120,8 @@ class Metaphor_Public {
 
 		// PAGINATION FOR CART PAGE
 
-		$loop = new WP_Query( array('posts_per_page'=>3, 'post_type'=>'products','paged' => get_query_var('paged') ? get_query_var('paged') : 1) );
+		$loop = new WP_Query( array('posts_per_page'=>2, 'post_type'=>'products','paged' => get_query_var('page') ? get_query_var('page') : 1) );
 
-		// print_r($loop);
-		// print_r(get_query_var('paged'));
-
-			// print_r(array(
-			// 	'current' => max( 1, get_query_var('paged') ),
-			// 	'total' => $loop->max_num_pages
-			// 	));
 
 		// $loop = new WP_Query( array( 'post_type' => 'products', 'posts_per_page' => 10 ) );
 		while ( $loop->have_posts() ) : $loop->the_post();
@@ -156,7 +151,7 @@ class Metaphor_Public {
 
 		<?php endwhile;
 		echo paginate_links(array(
-			'current' => max( 1, get_query_var('paged') ),
+			'current' => max( 1, get_query_var('page') ),
 			'total' => $loop->max_num_pages
 			));
 
@@ -200,7 +195,7 @@ class Metaphor_Public {
 			}
 
 			// UPDATE PRODUCT
-			
+			// $inventory_msg = "";
 			if(isset($_POST['edit'])){
 				$user_id = get_current_user_id();
 				$user_meta = get_user_meta( $user_id, 'add_cart' , true);
@@ -208,20 +203,38 @@ class Metaphor_Public {
 				// echo $ids;
 				$quantity = $_POST['quantity'];
 				// echo $quantity;
-
+				$flag = 0;
 				foreach($user_meta as $key=> $value){
 					if($ids == $value['post_id']){
-						$user_meta[$key]['inventory'] = $quantity ;
+						$post_inventory_data = get_post_meta($value['post_id'], 'inventory_meta_key', true );
+						print_r($post_inventory_data);
+						print_r($user_meta[$key]['inventory']);
+						print_r($quantity);
+
+						if($post_inventory_data < $quantity) {
+							echo "Oops!.. ".$value['title']. " is out of stock";
+							// break;
+						}else  {
+							$user_meta[$key]['inventory'] = $quantity ;
+							$flag = 1;
+						}
+
+						// $user_meta[$key]['inventory'] = $quantity ;
 					
 						// update_user_meta( $user_id, 'add_cart', $user_meta ); 
 					
 					}
 				}
-				update_user_meta( $user_id, 'add_cart', $user_meta ); 
-				echo "<script>alert('Product updated successfully')</script>";
+				if($flag == 1){
+					update_user_meta( $user_id, 'add_cart', $user_meta ); 
+					echo "<script>alert('Product updated successfully')</script>";
+
+				}
+				// update_user_meta( $user_id, 'add_cart', $user_meta ); 
+				// echo "<script>alert('Product updated successfully')</script>";
 
 			}
-			// echo $id;
+			
 			$user_id = get_current_user_id();
 			$user_meta = get_user_meta( $user_id, 'add_cart' , true);
 			// $tile =  get_the_title();
@@ -338,12 +351,46 @@ class Metaphor_Public {
 				<?}
 				?>
 			</table>
+			
 			<?
 
-		}
+		}?>
+		<div>
+		
+			<!-- <button type = "submit" class = "btn btn-primary" name = "checkout" value = "<?php echo $value['post_id'];?>">Checkout</button> -->
+			<button><a href="checkouts" style ="text-decoration : none">Checkout</a></button>
+		</div><?
+
+		
 
 	}
 
+
+	//    SHORTCODE FOR THANKYOU
+	
+	/**
+	 * ced_thankyou_page
+	 * 
+	 * Description : create a shortcode for thankyou page after checkout
+	 * Date : 11-01-2021
+	 * @since : 1.0.0
+	 * @version : 1.0
+	 *
+	 * @return void
+	 */
+	function ced_thankyou_page(){
+		$url=home_url();
+		?>
+		<body>
+        <h1>Thanks for Shopping. Your Order is successfully Placed</h1>
+        <div>
+
+            <p><a href="<?php echo $url?>">Continue Shopping</a></p>
+        </div>
+    </body>
+	<?
+	echo "thanks";
+	}
 
 	//    SHORTCODE FOR CHECKOUT PAGE 
 	
@@ -357,6 +404,7 @@ class Metaphor_Public {
 	 * @return void
 	 */
 	function ced_checkout_display(){
+		
 		$user_id = get_current_user_id();
 
 		if(!empty($user_id)){
@@ -387,6 +435,8 @@ class Metaphor_Public {
 			if(isset($_POST['edit'])){
 				$user_id = get_current_user_id();
 				$user_meta = get_user_meta( $user_id, 'add_cart' , true);
+				$invent = $user_meta->inventory;
+
 				$ids = $_POST['edit'];
 				// echo $ids;
 				$quantity = $_POST['quantity'];
@@ -397,53 +447,276 @@ class Metaphor_Public {
 						$user_meta[$key]['inventory'] = $quantity ;
 					
 						// update_user_meta( $user_id, 'add_cart', $user_meta ); 
-					
 					}
 				}
 				update_user_meta( $user_id, 'add_cart', $user_meta ); 
 				echo "<script>alert('Product updated successfully')</script>";
 
 			}
-			// echo $id;
+
+			if(isset($_POST['checkout'])){
+
+				$user_id = get_current_user_id();
+				$user_meta = get_user_meta( $user_id, 'add_cart' , true);
+				$user_meta_db = json_encode($user_meta);
+				// print_r($user_meta_db);
+
+				$total_amount = 0;
+				foreach($user_meta as $key => $value){
+					$total_amount += $value['price'] * $value['inventory'];
+				}
+
+				// echo $total_amount;
+				
+				$name = $_POST['firstname'];
+				$email = $_POST['email'];
+				$billing_address = $_POST['address'];
+				$mobile = $_POST['mobile'];
+				$state = $_POST['state'];
+				$zip = $_POST['zip'];
+
+				$bill_add = array('address' => $billing_address, 'state' => $state, 'zip' => $zip);
+				$bill_add = json_encode($bill_add);
+				
+				if(isset($_POST['cardname'])){
+					$payment_mode = "Cash On Delivery";
+				}
+				
+				if(isset($_POST['sameadr'])){
+					$ship_add = $_POST['bill_address'];
+					$ship_state = $_POST['bill_state'];
+					$ship_zip = $_POST['bill_zip'];
+					$shipping_address = array('address' => $ship_add, 'state' => $ship_state, 'zip'=> $ship_zip);
+					$shipping_address = json_encode($shipping_address);
+					
+				}
+
+			
+				$customer_details = array('name' => $name, 'email' => $email, 'mobile' => $mobile);
+				$customer_details = json_encode($customer_details);
+				print_r($customer_details);
+
+				global $wpdb;
+    				
+				$table_name =  'orders';
+				
+				$wpdb->insert( 
+					$table_name, 
+					array( 
+						'user_id' => $user_id, 
+						'customer_details' => $customer_details, 
+						'prod_details' => $user_meta_db, 
+						'billing_address' => $bill_add,
+						'shipping_address' => $shipping_address, 
+						'total_amount' => $total_amount, 
+						'payment_method' => 'cash on delivery'
+						
+					) 
+				);
+
+				
+				$current_user_meta = get_user_meta( $user_id, 'add_cart' , true);
+
+				foreach($current_user_meta as $key => $value){
+					$current_product_inventory = get_post_meta($value['post_id'], 'inventory_meta_key', true );
+					
+					$current_product_inventory -= $value['inventory'];
+					// print_r($current_product_inventory);
+
+					// Update inventory after checkout
+					update_post_meta($value['post_id'], 'inventory_meta_key', $current_product_inventory);
+
+				}
+
+				// Empty user_meta data after checkout 
+
+				$meta = array();
+				update_user_meta( $user_id, 'add_cart', $meta );
+
+				echo '<script>location.replace("thankyou");</script>';
+
+				// $current_inventory = 
+				// $update_inventory = 
+
+
+
+			}
+		
 			$user_id = get_current_user_id();
 			$user_meta = get_user_meta( $user_id, 'add_cart' , true);
-			// $tile =  get_the_title();
-			// print_r($user_meta);
+			
+
+			 foreach($user_meta as $key => $value){
 			?>
-			<table style ="border : 1px solid white">
-				<tr>
-					<th>ID</th>
-					<th>product name</th>
-					<th>Image</th>
-					<th>price</th>
-					<th>Inventory</th>
-					<th>Total</th>
-					<th>Action</th>
-				</tr>
-				<?
+
+				<div class="card col-25" style="width: 18rem;">
+					<div class="container card-body">
+						<h4 class = "card-title">Cart Details
+							<span class="price" style="color:black">
+								<i class="fa fa-shopping-cart"></i>
+								<b><p>Product ID : <?php echo $value['post_id'];?></p></b>
+							</span>
+						</h4>
+
+						<p>Product name : <?php echo $value['title'];?></p>
+						<p>Price : <?php echo $value['price'];?></p>
+						<p>Quantity : <?php echo $value['inventory'];?></p>
 				
-				foreach($user_meta as $key => $value){
-					// print_r($value);?>
+						<hr>
+						<p>Total <span class="price" style="color:black"><b>$<?php echo $value['price'] * $value['inventory'];?></b></span></p>
+					</div>
+			 	</div>
+				 <br>
+			 <?php }
 
-					<tr>
-						<form method="post">
-							<td><?php echo $value['post_id'];?></td>
-							<td><?php echo $value['title'];?></td>
-							<td><img src="<?php echo $value['image'];?>" style="height : 150px"></td>
-							<td><?php echo $value['price'];?></td>
-							<td><input type="number" min = "1" name ="quantity" value = "<?php echo $value['inventory'];?>"></td>
-							<td><?php echo $value['price'] * $value['inventory'];?></td>
-							<td><button type = "submit" name = "delete" value = "<?php echo $value['post_id'];?>">Delete</button></td>
-							<td><button type = "submit" name = "edit" value = "<?php echo $value['post_id'];?>">EDIT</button></td>
-						</form>
-					</tr>
-
-				<?}
 				?>
-			</table>
-			<?
 
+			<!-- CHECKOUT FORM -->
+
+			<div class="row">
+				<div class="col-75">
+					<div class="container">
+						<form method ="post">
+							<div class="row">
+								<div class="col-50">
+									<h3>Billing Address</h3>
+									<label for="fname"><i class="fa fa-user"></i> Full Name</label>
+									<input onkeypress="return /^[a-zA-Z ]*$/.test(event.key)" type="text" id="fname" name="firstname" placeholder="John M. Doe">
+									<label for="email"><i class="fa fa-envelope"></i> Email</label>
+									<input type="email" id="email" name="email" placeholder="john@example.com">
+									<label for="adr"><i class="fa fa-address-card-o"></i> Address</label>
+									<input type="text" id="address" name="address" placeholder="542 W. 15th Street">
+									
+									<label for="mobile"><i class="fa fa-institution"></i> Mobile no.</label>
+									<input type="number" id="ship_mobile" name="mobile" placeholder="ex. 123"  min ="0" maxlength = "10">
+
+									<div class="row">
+										<div class="col-50">
+											<label for="state">State</label>
+											<input type="text" id="state" name="state" placeholder="NY">
+										</div>
+										<div class="col-50">
+											<label for="zip">Zip</label>
+											<input type="text" id="zip" name="zip" placeholder="10001" min = "6" max = "6">
+										</div>
+									</div>
+
+									<h3>Shipping Address</h3>
+									
+									<label for="adr"><i class="fa fa-address-card-o"></i> Address</label>
+									<input type="text" id="ship_address" name="bill_address" placeholder="542 W. 15th Street">
+									
+
+									<div class="row">
+										<div class="col-50">
+											<label for="state">State</label>
+											<input type="text" id="ship_state" name="bill_state" placeholder="NY">
+										</div>
+										<div class="col-50">
+											<label for="zip">Zip</label>
+											<input type="text" id="ship_zip" name="bill_zip" placeholder="10001" min = "6" max = "6">
+										</div>
+									</div>
+								</div>
+
+								<div class="col-50">
+									<h3>Payment mode</h3>
+									
+									<label for="cname">Cash on delivery</label>
+									<input type="radio" id="cname" name="cardname" placeholder="John More Doe">
+								</div>
+							</div>
+							<label>
+								<input type="checkbox" id ="check" name="sameadr"> Shipping address same as billing
+							</label>
+							<input type="submit" value="Continue to checkout" name ="checkout" >
+							
+						</form>
+					</div>
+				</div>
+			</div>
+			<?
 		}else{
+
+			if(isset($_POST['checkout'])){
+
+				$user_id = get_current_user_id();
+				// $user_meta = get_user_meta( $user_id, 'add_cart' , true);
+				$user_meta = $_SESSION['cart_Array'];
+				$user_meta_db = json_encode($user_meta);
+				print_r($user_meta_db);
+
+				$total_amount = 0;
+				foreach($_SESSION['cart_Array'] as $key => $value){
+					$total_amount += $value['price'] * $value['inventory'];
+				}
+
+				echo $total_amount;
+				
+				$name = $_POST['firstname'];
+				$email = $_POST['email'];
+				$billing_address = $_POST['address'];
+				$mobile = $_POST['mobile'];
+				$state = $_POST['state'];
+				$zip = $_POST['zip'];
+
+				$bill_add = array('address' => $billing_address, 'state' => $state, 'zip' => $zip);
+				$bill_add = json_encode($bill_add);
+				
+				if(isset($_POST['cardname'])){
+					$payment_mode = "Cash On Delivery";
+				}
+				
+				if(isset($_POST['sameadr'])){
+					$ship_add = $_POST['bill_address'];
+					$ship_state = $_POST['bill_state'];
+					$ship_zip = $_POST['bill_zip'];
+					$shipping_address = array('address' => $ship_add, 'state' => $ship_state, 'zip'=> $ship_zip);
+					$shipping_address = json_encode($shipping_address);
+					
+				}
+
+			
+				$customer_details = array('name' => $name, 'email' => $email, 'mobile' => $mobile);
+				$customer_details = json_encode($customer_details);
+				print_r($customer_details);
+
+				global $wpdb;
+    				
+				$table_name =  'orders';
+				
+				$wpdb->insert( 
+					$table_name, 
+					array( 
+						'user_id' => $user_id, 
+						'customer_details' => $customer_details, 
+						'prod_details' => $user_meta_db, 
+						'billing_address' => $bill_add,
+						'shipping_address' => $shipping_address, 
+						'total_amount' => $total_amount, 
+						'payment_method' => 'cash on delivery'
+						
+					) 
+				);
+
+				
+				// $current_user_meta = get_user_meta( $user_id, 'add_cart' , true);
+
+				foreach($_SESSION['cart_Array'] as $key => $value){
+					$current_product_inventory = get_post_meta($value['post_id'], 'inventory_meta_key', true );
+					
+					$current_product_inventory -= $value['inventory'];
+					print_r($current_product_inventory);
+					update_post_meta($value['post_id'], 'inventory_meta_key', $current_product_inventory);
+
+				}
+
+				$meta = array();
+				update_user_meta( $user_id, 'add_cart', $meta );
+
+				echo '<script>location.replace("thankyou");</script>';
+
+			}
 			// DELETE PRODUCT
 
 			if(isset($_POST['delete'])){
@@ -487,52 +760,100 @@ class Metaphor_Public {
 				echo "<script>alert('Product updated successfully')</script>";
 
 			}
-			
-			?>
-			<table style ="border : 1px solid white">
-				<tr>
-					<th>ID</th>
-					<th>product name</th>
-					<th>Image</th>
-					<th>price</th>
-					<th>Inventory</th>
-					<th>Total</th>
-					<th>Action</th>
-				</tr>
-				<?
-				
-				foreach($_SESSION['cart_Array'] as $key => $value){
-					// print_r($value);?>
-
-					<tr>
-						<form method="post">
-							<td><?php echo $value['post_id'];?></td>
-							<td><?php echo $value['title'];?></td>
-							<td><img src="<?php echo $value['image'];?>" style="height : 150px"></td>
-							<td><?php echo $value['price'];?></td>
-							<td><input type="number" min = "1" name ="quantity" value = "<?php echo $value['inventory'];?>"></td>
-							<td><?php echo $value['price'] * $value['inventory'];?></td>
-							<td><button type = "submit" name = "delete" value = "<?php echo $value['post_id'];?>">Delete</button></td>
-							<td><button type = "submit" name = "edit" value = "<?php echo $value['post_id'];?>">EDIT</button></td>
-						</form>
-					</tr>
-
-				<?}
+			foreach($_SESSION['cart_Array'] as $key => $value){
 				?>
-			</table>
+	
+				<div class="card col-25" style="width: 18rem;">
+					<div class="container card-body">
+						<h4 class = "card-title">Cart Details
+							<span class="price" style="color:black">
+								<i class="fa fa-shopping-cart"></i>
+								<b><p>Product ID : <?php echo $value['post_id'];?></p></b>
+							</span>
+						</h4>
+
+						<p>Product name : <?php echo $value['title'];?></p>
+						<p>Price : <?php echo $value['price'];?></p>
+						<p>Quantity : <?php echo $value['inventory'];?></p>
+				
+						<hr>
+						<p>Total <span class="price" style="color:black"><b>$<?php echo $value['price'] * $value['inventory'];?></b></span></p>
+					</div>
+				</div>
+				<br>
+			<?php }
+
+			?>
+			<!-- CHECKOUT FORM -->
+
+			<div class="row">
+				<div class="col-75">
+					<div class="container">
+						<form method ="post">
+							<div class="row">
+								<div class="col-50">
+									<h3>Billing Address</h3>
+									<label for="fname"><i class="fa fa-user"></i> Full Name</label>
+									<input onkeypress="return /^[a-zA-Z ]*$/.test(event.key)" type="text" id="fname" name="firstname" placeholder="John M. Doe">
+									<label for="email"><i class="fa fa-envelope"></i> Email</label>
+									<input type="email" id="email" name="email" placeholder="john@example.com">
+									<label for="adr"><i class="fa fa-address-card-o"></i> Address</label>
+									<input type="text" id="address" name="address" placeholder="542 W. 15th Street">
+									
+									<label for="mobile"><i class="fa fa-institution"></i> Mobile no.</label>
+									<input type="number" id="ship_mobile" name="mobile" placeholder="ex. 123"  min ="0" maxlength = "10">
+
+									<div class="row">
+										<div class="col-50">
+											<label for="state">State</label>
+											<input type="text" id="state" name="state" placeholder="NY">
+										</div>
+										<div class="col-50">
+											<label for="zip">Zip</label>
+											<input type="text" id="zip" name="zip" placeholder="10001" min = "6" max = "6">
+										</div>
+									</div>
+
+									<h3>Shipping Address</h3>
+									
+									<label for="adr"><i class="fa fa-address-card-o"></i> Address</label>
+									<input type="text" id="ship_address" name="bill_address" placeholder="542 W. 15th Street">
+									
+
+									<div class="row">
+										<div class="col-50">
+											<label for="state">State</label>
+											<input type="text" id="ship_state" name="bill_state" placeholder="NY">
+										</div>
+										<div class="col-50">
+											<label for="zip">Zip</label>
+											<input type="text" id="ship_zip" name="bill_zip" placeholder="10001" min = "6" max = "6">
+										</div>
+									</div>
+								</div>
+
+								<div class="col-50">
+									<h3>Payment mode</h3>
+									
+									<label for="cname">Cash on delivery</label>
+									<input type="radio" id="cname" name="cardname" placeholder="John More Doe">
+								</div>
+							</div>
+							<label>
+								<input type="checkbox" id ="check" name="sameadr"> Shipping address same as billing
+							</label>
+							<input type="submit" value="Continue to checkout" name ="checkout" >
+							
+						</form>
+					</div>
+				</div>
+			</div>
+			
 			<?
-
 		}
-
-		?>
-		<div>
-		<button type = "submit" class = "btn btn-primary" name = "delete" value = "<?php echo $value['post_id'];?>">Checkout</button>
-		</div>
-		<?
+		
 	}
 
-
-	
 	/**
 	 * ced_guests_login
 	 *
@@ -544,7 +865,7 @@ class Metaphor_Public {
 	 */
 	public function ced_guests_login(){
 
-		if ( is_user_logged_in() && !empty($_SESSION['cart_Array'])) {
+		if ( is_user_logged_in() == true && !empty($_SESSION['cart_Array'])) {
 			$user_id = get_current_user_id();
 			echo $user_id;
 			update_user_meta( $user_id, 'add_cart', $_SESSION['cart_Array'] ); 
