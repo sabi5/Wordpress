@@ -301,10 +301,10 @@ class Metaphor_Admin {
 		*/
 		public function ced_cpt_wporg_options_page_html() {
 		
-			$args = array(
-				'public' => true,
-				'_builtin' => false
-				);
+			// $args = array(
+			// 	'public' => true,
+			// 	'_builtin' => false
+			// 	);
 				
 				$output = 'names'; // 'names' or 'objects' (default: 'names')
 				$operator = 'or'; // 'and' or 'or' (default: 'and')

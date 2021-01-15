@@ -685,7 +685,7 @@ class Metaphor_Public {
     				
 				$table_name =  'orders';
 				
-				$wpdb->insert( 
+				$check = $wpdb->insert( 
 					$table_name, 
 					array( 
 						'user_id' => $user_id, 
@@ -710,11 +710,13 @@ class Metaphor_Public {
 					update_post_meta($value['post_id'], 'inventory_meta_key', $current_product_inventory);
 
 				}
+				if($check){
+					$meta = array();
+					update_user_meta( $user_id, 'add_cart', $meta );
 
-				$meta = array();
-				update_user_meta( $user_id, 'add_cart', $meta );
-
-				echo '<script>location.replace("thankyou");</script>';
+					echo '<script>location.replace("thankyou");</script>';
+				}
+				
 
 			}
 			// DELETE PRODUCT
